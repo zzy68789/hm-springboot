@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://test-zxyf-mysql.ns-wr7sthdv.svc:3306/zxyf?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: f59tftms
+
+# MyBatis 配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.hello.entity
+  configuration:
+    map-underscore-to-camel-case: true  # 开启驼峰命名转换
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 开启SQL日志
+
+# PageHelper 配置
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+# 对象存储配置
+oss:
+  access-key: wr7sthdv
+  secret-key: r44xccdsfltxq2zf
+  endpoint-internal: object-storage.objectstorage-system.svc.cluster.local
+  endpoint-external: objectstorageapi.hzh.sealos.run
+  bucket-name: wr7sthdv-zxyf
+  region: us-east-1
+

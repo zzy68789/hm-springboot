@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hello.mapper.EmpExprMapper">
+
+    <!-- 结果映射 -->
+    <resultMap id="BaseResultMap" type="com.example.hello.entity.EmpExpr">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="emp_id" property="empId" jdbcType="INTEGER"/>
+        <result column="company" property="company" jdbcType="VARCHAR"/>
+        <result column="position" property="position" jdbcType="VARCHAR"/>
+        <result column="start_date" property="startDate" jdbcType="DATE"/>
+        <result column="end_date" property="endDate" jdbcType="DATE"/>
+    </resultMap>
+
+    <!-- 根据员工ID查询工作经历列表 -->
+    <select id="selectByEmpId" parameterType="int" resultMap="BaseResultMap">
+        SELECT id, emp_id, company, position, start_date, end_date
+        FROM emp_expr
+        WHERE emp_id = #{empId}
+        ORDER BY start_date DESC
+    </select>
+
+    <!-- 批量插入工作经历 -->
+    <insert id="insertBatch" parameterType="list">
+        INSERT INTO emp_expr (emp_id, company, position, start_date, end_date)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.empId}, #{item.company}, #{item.position}, #{item.startDate}, #{item.endDate})
+        </foreach>
+    </insert>
+
+    <!-- 根据员工ID删除工作经历 -->
+    <delete id="deleteByEmpId" parameterType="int">
+        DELETE FROM emp_expr
+        WHERE emp_id = #{empId}
+    </delete>
+
+    <!-- 根据员工ID列表批量删除工作经历 -->
+    <delete id="deleteByEmpIds" parameterType="list">
+        DELETE FROM emp_expr
+        WHERE emp_id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
+

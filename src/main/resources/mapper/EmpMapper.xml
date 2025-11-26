@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.hello.mapper.EmpMapper">
+
+    <!-- 结果映射（包含部门名称） -->
+    <resultMap id="BaseResultMap" type="com.example.hello.entity.Emp">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="gender" property="gender" jdbcType="TINYINT"/>
+        <result column="phone" property="phone" jdbcType="CHAR"/>
+        <result column="position" property="position" jdbcType="TINYINT"/>
+        <result column="salary" property="salary" jdbcType="INTEGER"/>
+        <result column="image" property="image" jdbcType="VARCHAR"/>
+        <result column="hire_date" property="hireDate" jdbcType="DATE"/>
+        <result column="dept_id" property="deptId" jdbcType="INTEGER"/>
+        <result column="dept_name" property="deptName" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 基础列 -->
+    <sql id="Base_Column_List">
+        e.id, e.username, e.password, e.name, e.gender, e.phone, e.position,
+        e.salary, e.image, e.hire_date, e.dept_id, d.name as dept_name,
+        e.create_time, e.update_time
+    </sql>
+
+    <!-- 条件分页查询员工列表 -->
+    <select id="selectByCondition" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM emp e
+        LEFT JOIN dept d ON e.dept_id = d.id
+        <where>
+            <if test="name != null and name != ''">
+                AND e.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="gender != null">
+                AND e.gender = #{gender}
+            </if>
+            <if test="begin != null and end != null">
+                AND e.hire_date BETWEEN #{begin} AND #{end}
+            </if>
+        </where>
+        ORDER BY e.update_time DESC
+    </select>
+
+    <!-- 根据ID查询员工 -->
+    <select id="selectById" parameterType="int" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM emp e
+        LEFT JOIN dept d ON e.dept_id = d.id
+        WHERE e.id = #{id}
+    </select>
+
+    <!-- 根据用户名查询员工（用于登录） -->
+    <select id="selectByUsername" parameterType="string" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM emp e
+        LEFT JOIN dept d ON e.dept_id = d.id
+        WHERE e.username = #{username}
+    </select>
+
+    <!-- 查询所有员工 -->
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM emp e
+        LEFT JOIN dept d ON e.dept_id = d.id
+        ORDER BY e.update_time DESC
+    </select>
+
+    <!-- 添加员工 -->
+    <insert id="insert" parameterType="com.example.hello.entity.Emp" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO emp (username, password, name, gender, phone, position, salary, image, hire_date, dept_id)
+        VALUES (#{username}, #{password}, #{name}, #{gender}, #{phone}, #{position}, #{salary}, #{image}, #{hireDate}, #{deptId})
+    </insert>
+
+    <!-- 修改员工 -->
+    <update id="update" parameterType="com.example.hello.entity.Emp">
+        UPDATE emp
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="position != null">position = #{position},</if>
+            <if test="salary != null">salary = #{salary},</if>
+            <if test="image != null">image = #{image},</if>
+            <if test="hireDate != null">hire_date = #{hireDate},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 批量删除员工 -->
+    <delete id="deleteByIds" parameterType="list">
+        DELETE FROM emp
+        WHERE id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
+
